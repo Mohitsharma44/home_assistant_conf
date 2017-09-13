@@ -22,13 +22,15 @@ zone:
     icon: mdi:home
 
   - name: Mohit Work
-    latitude: !secret mohit_work_lat
-    latitude: !secret mohit_work_lon
+    latitude: !secret work_mohit_lat
+    longitude: !secret work_mohit_lon
+    radius: 100
     icon: mdi:laptop-mac
 
   - name: Sayali Work
-    latitude: !secret sayali_work_lat
-    longitude: !secret sayali_work_lon
+    latitude: !secret work_sayali_lat
+    longitude: !secret work_sayali_lon
+    radius: 100
     icon: mdi:plus-network
 
 # Show links to resources in log and frontend
