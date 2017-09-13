@@ -1,0 +1,11 @@
+greeting:
+  sequence:
+  - data:
+      message: Hello World
+    data_template:
+      entity_id: media_player.living_room
+      message: '{% if now().strftime("%H")|int < 12 %} Good Morning. {% elif now().strftime("%H")|int
+        < 16 %} Good Afternoon {% else %} Good Evening {% endif %}
+
+        '
+    service: tts.google_say
