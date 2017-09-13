@@ -14,6 +14,23 @@ homeassistant:
   #customize: !include customize.yaml
   customize: !include_dir_merge_named customizations
 
+zone:
+  - name: Home
+    latitude: !secret home_lat
+    longitude: !secret home_lon
+    radius: 100
+    icon: mdi:home
+
+  - name: Mohit Work
+    latitude: !secret mohit_work_lat
+    latitude: !secret mohit_work_lon
+    icon: mdi:laptop-mac
+
+  - name: Sayali Work
+    latitude: !secret sayali_work_lat
+    longitude: !secret sayali_work_lon
+    icon: mdi:plus-network
+
 # Show links to resources in log and frontend
 #introduction:
 
