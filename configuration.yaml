@@ -84,6 +84,10 @@ group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
 sensor: !include_dir_list sensors
+switch: !include switches.yaml
+
+
+mqtt:
 
 media_player:
   - platform: sonos
