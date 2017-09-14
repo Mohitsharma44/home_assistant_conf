@@ -1,12 +1,11 @@
 import os
 import logging
 import asyncio
-
+import atexit
+import RPi.GPIO as GPIO
 from hbmqtt.client import MQTTClient, ClientException
 from hbmqtt.mqtt.constants import QOS_0
 
-import RPi.GPIO as GPIO
-GPIO.setwarnings(False)
 ##
 # Custom Settings for the Pi's GPIO
 # ----------------------------------
@@ -15,6 +14,14 @@ GPIO.setwarnings(False)
 # 13         | Sofa power
 # 26         | Sofa accent lights
 ##
+
+GPIO.setwarnings(False)
+
+# Setting up logger
+logger = logging.getLogger('root')
+FORMAT = '[%(levelname)1s]: [%(asctime)-15s %(filename)s:%(lineno)s %(funcName)20s()] %(message)s'
+logging.basicConfig(format=FORMAT)
+logger.setLevel(logging.DEBUG)
 
 switch_mode = {
     "on": GPIO.LOW,
@@ -30,14 +37,17 @@ gpio_config = {
 mqtt_host = "hassio.local"
 username  = os.getenv("hassio_username")
 password  = os.getenv("hassio_password")
-
 topics    = ["home/livingroom/sofa_lights",
              "home/livingroom/sofa_accent",
              "home/livingroom/sofa_power"]
 
+C = MQTTClient()
+
 @asyncio.coroutine
 def uptime_coro():
-    C = MQTTClient()
+    """
+    Subcribe to MQTT and keep listening for updates
+    """
     yield from C.connect('mqtt://{username}:{password}@{mqtt_host}'.format(username=username,
                                                                            password=password,
                                                                            mqtt_host=mqtt_host))
@@ -49,16 +59,27 @@ def uptime_coro():
             topic_name = packet.variable_header.topic_name.split('/')[-1]
             gpio_channels = gpio_config.get(topic_name)
             if gpio_channels:
-                print("Got: {} => {}".format(topic_name, gpio_channels))
-                print("%s => %s" % (packet.variable_header.topic_name,
-                                    str(packet.payload.data)))
+                logger.debug("{} => {}".format(packet.variable_header.topic_name,
+                                               str(packet.payload.data)))
                 GPIO.output(gpio_channels,
                             switch_mode.get(packet.payload.data.lower().decode('utf-8')))
-            #yield from C.unsubscribe([topic for topic in topics])
-            #yield from C.disconnect()
     except ClientException as ce:
-        logger.error("Client exception: %s" % ce)
+        logger.error("Client exception: {}".format(ce))
+    except KeyboardInterrupt as kbe:
+        cleanup()
         
+@atexit.register
+def cleanup():
+    """
+    Cleanup method to unsubscribe from a topic and disconnect
+    gracefully
+    """
+    try:
+        yield from C.unsubscribe([topic for topic in topics])
+        yield from C.disconnect()
+    except ClientException as ce:
+        logger.error("Client exception in cleanup: {}".format(ce))
+    
 if __name__ == '__main__':
     # Set GPIO board type to BCM a.k.a "Broadcom SOC channel"
     # (the actual pin numbers next to the GPIO pins)
