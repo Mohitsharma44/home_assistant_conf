@@ -1,0 +1,26 @@
+- platform: mqtt
+  name: "sofa_lights"
+  state_topic: "home/livingroom/sofa_lights"
+  command_topic: "home/livingroom/sofa_lights"
+  qos: 0
+  payload_on: "on"
+  payload_off: "off"
+  retain: true
+
+- platform: mqtt
+  name: "sofa_accent"
+  state_topic: "home/livingroom/sofa_accent"
+  command_topic: "home/livingroom/sofa_accent"
+  qos: 0
+  payload_on: "on"
+  payload_off: "off"
+  retain: true
+
+- platform: mqtt
+  name: "sofa_power"
+  state_topic: "home/livingroom/sofa_power"
+  command_topic: "home/livingroom/sofa_power"
+  qos: 0
+  payload_on: "on"
+  payload_off: "off"
+  retain: true
