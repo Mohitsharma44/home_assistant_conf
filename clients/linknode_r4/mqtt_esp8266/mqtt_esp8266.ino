@@ -1,26 +1,30 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <map>
+#include <vector>
+
 // WiFi and MQTT info
 
-const char* ssid = "wifiname";
-const char* password = "wifipassword";
-const char* mqtt_user = "username";
-const char* mqtt_pass = "password";
-const char* mqtt_server = "mqttserver";
+const char* ssid = "";
+const char* password = "";
+const char* mqtt_user = "";
+const char* mqtt_pass = "";
+const char* mqtt_server = "";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
-long lastMsg = 0;
-char msg[50];
-int value = 0;
-int sw = 0;
 
-std::map<String, int> gpio_config {
-  {"home/livingroom/linknode1/sw1", 0},
-  {"home/livingroom/linknode1/sw2", 0},
-  {"home/livingroom/linknode1/sw3", 0},
-  {"home/livingroom/linknode1/sw4", 0}
+
+std::vector<int> sw1_state(2);
+std::vector<int> sw2_state(2);
+std::vector<int> sw3_state(2);
+std::vector<int> sw4_state(2);
+
+std::map<String, std::vector<int>> gpio_config {
+  {"home/livingroom/linknode1/sw1", sw1_state},
+  {"home/livingroom/linknode1/sw2", sw2_state},
+  {"home/livingroom/linknode1/sw3", sw3_state},
+  {"home/livingroom/linknode1/sw4", sw4_state}
 };
 
 
@@ -29,10 +33,10 @@ void setup() {
   pinMode(13, OUTPUT); // Setup Relay2
   pinMode(14, OUTPUT); // Setup Relay3
   pinMode(16, OUTPUT); // Setup Relay4
-  gpio_config["home/livingroom/linknode1/sw1"] = 12;
-  gpio_config["home/livingroom/linknode1/sw2"] = 13;
-  gpio_config["home/livingroom/linknode1/sw3"] = 14;
-  gpio_config["home/livingroom/linknode1/sw4"] = 16;
+  gpio_config["home/livingroom/linknode1/sw1"] = {12, 0};
+  gpio_config["home/livingroom/linknode1/sw2"] = {13, 0};
+  gpio_config["home/livingroom/linknode1/sw3"] = {14, 0};
+  gpio_config["home/livingroom/linknode1/sw4"] = {16, 0};
   Serial.begin(115200);
   setup_wifi();
   client.setServer(mqtt_server, 1883);
@@ -70,12 +74,15 @@ void callback(char* topic, byte* payload, unsigned int length) {
     data += (char)payload[i];
   }
   Serial.println();
-  sw = gpio_config[topic];
+  // Reference of gpio_config
+  std::vector<int>& sw = gpio_config[topic];
   // Switch Relay on or off
   if (data == "on") {
-    digitalWrite(sw, HIGH);
+    digitalWrite(sw[0], 1);
+    sw[1] = 1;
   } else if (data == "off"){
-    digitalWrite(sw, LOW);
+    digitalWrite(sw[0], 0);
+    sw[1] = 0;
   }
 }
 
@@ -89,7 +96,7 @@ void reconnect() {
       // Once connected, publish an announcement...
       // ... and resubscribe
       for(auto const &gpio_topic : gpio_config){
-        //client.publish(gpio_topic.first.c_str, "off");
+        client.publish(gpio_topic.first.c_str(), gpio_topic.second[1]==1 ? "on" : "off");
         // Subscribe to all the topics
         client.subscribe(gpio_topic.first.c_str());
       }
