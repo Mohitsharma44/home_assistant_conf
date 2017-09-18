@@ -89,6 +89,12 @@ switch: !include switches.yaml
 
 mqtt:
 
+zwave:
+  # it changes between /dev/ttyACM0 and ttyACM1
+  usb_path: /dev/serial/by-id/usb-0658_0200-if00
+  #config_path: /usr/local/share/python-openzwave/config
+  network_key: !secret zwave_nw_key
+
 media_player:
   - platform: sonos
     hosts: 192.168.1.196
