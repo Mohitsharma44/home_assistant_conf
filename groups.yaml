@@ -13,6 +13,7 @@ livingroom:
     - switch.sofa_lights
     - switch.sofa_accent
     - switch.sofa_power
+    - switch.floorlamp1
     - media_player.living_room
     - media_player.appletv
     - remote.appletv
@@ -35,3 +36,6 @@ misc_scripts:
   name: misc_script
   entities:
     - script.greeting
+    - switch.sw2
+    - switch.sw3
+    - switch.sw4

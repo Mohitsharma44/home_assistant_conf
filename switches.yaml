@@ -24,3 +24,39 @@
   payload_on: "on"
   payload_off: "off"
   retain: true
+
+- platform: mqtt
+  name: "floorlamp1"
+  state_topic: "home/livingroom/linknode1/sw1"
+  command_topic: "home/livingroom/linknode1/sw1"
+  qos: 0
+  payload_on: "on"
+  payload_off: "off"
+  retain: true
+
+- platform: mqtt
+  name: "SW2"
+  state_topic: "home/livingroom/linknode1/sw2"
+  command_topic: "home/livingroom/linknode1/sw2"
+  qos: 0
+  payload_on: "on"
+  payload_off: "off"
+  retain: true
+
+- platform: mqtt
+  name: "SW3"
+  state_topic: "home/livingroom/linknode1/sw3"
+  command_topic: "home/livingroom/linknode1/sw3"
+  qos: 0
+  payload_on: "on"
+  payload_off: "off"
+  retain: true
+
+- platform: mqtt
+  name: "SW4"
+  state_topic: "home/livingroom/linknode1/sw4"
+  command_topic: "home/livingroom/linknode1/sw4"
+  qos: 0
+  payload_on: "on"
+  payload_off: "off"
+  retain: true
